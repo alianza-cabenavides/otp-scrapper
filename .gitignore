@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Editor
+.vscode/
+.idea/
+*.swp
+
+# Local env / secrets
+.env
+.env.local
+
+# Capturas de red (contienen cookies y credenciales)
+*.har

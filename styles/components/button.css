@@ -1,0 +1,49 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-2);
+  background-color: var(--c-accent);
+  color: var(--c-accent-text);
+  font-family: var(--ff-display);
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-500);
+  line-height: var(--lh-snug);
+  letter-spacing: var(--track-wide);
+  text-transform: uppercase;
+  transition: background-color 0.12s ease;
+}
+.btn:hover:not(:disabled) {
+  background-color: var(--c-accent-hover);
+}
+.btn:active:not(:disabled) {
+  background-color: var(--c-accent-active);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn--icon {
+  padding: var(--space-2);
+  background-color: transparent;
+  color: var(--c-text-2);
+  font-family: var(--ff-sans);
+  font-size: var(--fs-md);
+  line-height: var(--lh-tight);
+  letter-spacing: var(--track-normal);
+  text-transform: none;
+}
+.btn--icon svg {
+  display: block;
+  width: 1.25em;
+  height: 1.25em;
+}
+.btn--icon:hover:not(:disabled) {
+  background-color: var(--c-surface-2);
+}
+.btn--icon:active:not(:disabled) {
+  background-color: var(--c-surface-3);
+}

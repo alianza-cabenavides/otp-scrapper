@@ -1,0 +1,137 @@
+:root {
+  color-scheme: light dark;
+
+  --c-brand-100: #87c2f5;
+  --c-brand-200: #4d98da;
+  --c-brand-300: #035ba9;
+  --c-brand-400: #074b86;
+  --c-brand-500: #002d53;
+
+  --c-accent-100: #9ee3ff;
+  --c-accent-200: #5ad0ff;
+  --c-accent-300: #00b6ff;
+  --c-accent-400: #0192cc;
+  --c-accent-500: #0075a4;
+
+  --c-navy-100: #66839a;
+  --c-navy-200: #335979;
+  --c-navy-300: #003057;
+  --c-navy-400: #002646;
+  --c-navy-500: #001d34;
+
+  --c-lime-100: #e5e893;
+  --c-lime-200: #dde073;
+  --c-lime-300: #d2d655;
+  --c-lime-400: #c0c34e;
+  --c-lime-500: #a7aa44;
+
+  --c-neutral-0: #ffffff;
+  --c-neutral-50: #fcfcfc;
+  --c-neutral-100: #f6f6f6;
+  --c-neutral-200: #edeff6;
+  --c-neutral-250: #e4e7ef;
+  --c-neutral-300: #e2e2e7;
+  --c-neutral-350: #d3d4dd;
+  --c-neutral-400: #c5c6d1;
+  --c-neutral-500: #9da1b3;
+  --c-neutral-600: #6a6e80;
+  --c-neutral-700: #505260;
+  --c-neutral-900: #30313a;
+
+  --c-red-200: #d65555;
+  --c-red-300: #cf0808;
+  --c-amber-300: #ff900d;
+
+  --c-surface: var(--c-neutral-0);
+  --c-surface-2: var(--c-neutral-100);
+  --c-surface-3: var(--c-neutral-200);
+  --c-surface-sunken: var(--c-neutral-250);
+
+  --c-text: var(--c-navy-500);
+  --c-text-2: var(--c-neutral-700);
+  --c-text-3: var(--c-neutral-600);
+
+  --c-border: var(--c-neutral-300);
+  --c-border-2: var(--c-neutral-400);
+
+  --c-accent: var(--c-brand-300);
+  --c-accent-hover: var(--c-brand-400);
+  --c-accent-active: var(--c-brand-500);
+  --c-accent-text: var(--c-neutral-0);
+  --c-focus: var(--c-accent-300);
+
+  --c-success: var(--c-lime-500);
+  --c-warning: var(--c-amber-300);
+  --c-danger: var(--c-red-300);
+
+  --c-success-text: color-mix(in oklab, var(--c-success) 55%, var(--c-text));
+  --c-warning-text: color-mix(in oklab, var(--c-warning) 65%, var(--c-text));
+  --c-danger-subtle: color-mix(in oklab, var(--c-danger) 12%, var(--c-surface));
+
+  --ff-sans: system-ui, -apple-system, "Segoe UI Variable Text", "Segoe UI",
+    Roboto, "Helvetica Neue", Arial, sans-serif;
+  --ff-display: "Avenir Next", "Segoe UI Variable Display", Bahnschrift,
+    "Roboto Condensed", Roboto, "Helvetica Neue", system-ui, sans-serif;
+  --ff-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
+    "Cascadia Mono", monospace;
+
+  --fs-2xs: 0.6875rem; /* 11px */
+  --fs-xs: 0.8125rem; /*  13px */
+  --fs-sm: 0.875rem; /*   14px */
+  --fs-md: 1rem; /*        16px */
+  --fs-lg: 1.1875rem; /*   19px */
+  --fs-xl: 1.4375rem; /*   23px */
+  --fs-2xl: 1.75rem; /*    28px, fuera de escala: el código OTP */
+
+  --fw-400: 400;
+  --fw-500: 500;
+  --fw-700: 700;
+
+  --lh-tight: 1.15;
+  --lh-snug: 1.3;
+  --lh-normal: 1.5;
+
+  --track-normal: 0em;
+  --track-wide: 0.24em;
+
+  --space-1: 0.125rem; /*  2px */
+  --space-2: 0.25rem; /*   4px */
+  --space-3: 0.5rem; /*    8px */
+  --space-4: 0.75rem; /*  12px */
+  --space-5: 1rem; /*     16px */
+  --space-6: 1.5rem; /*   24px */
+  --space-7: 2.75rem; /*  44px */
+
+  --radius-1: 0.125rem;
+  --radius-2: 0.25rem;
+  --radius-3: 0.5rem;
+  --radius-full: 9999px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --c-surface: var(--c-navy-500);
+    --c-surface-2: var(--c-navy-400);
+    --c-surface-3: var(--c-navy-300);
+    --c-surface-sunken: var(--c-navy-500);
+
+    --c-text: var(--c-neutral-50);
+    --c-text-2: var(--c-neutral-350);
+    --c-text-3: var(--c-neutral-500);
+
+    --c-border: var(--c-navy-200);
+    --c-border-2: var(--c-navy-100);
+
+    --c-accent: var(--c-accent-300);
+    --c-accent-hover: var(--c-accent-200);
+    --c-accent-active: var(--c-accent-100);
+    --c-accent-text: var(--c-navy-500);
+    --c-focus: var(--c-accent-200);
+
+    --c-success: var(--c-lime-300);
+    --c-danger: var(--c-red-200);
+
+    --c-success-text: var(--c-success);
+    --c-warning-text: var(--c-warning);
+  }
+}

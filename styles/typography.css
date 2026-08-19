@@ -1,0 +1,30 @@
+h1 {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-700);
+  line-height: var(--lh-tight);
+}
+
+h2 {
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-700);
+  line-height: var(--lh-snug);
+}
+
+.hint {
+  font-size: var(--fs-xs);
+  color: var(--c-text-3);
+}
+.hint--small {
+  font-size: var(--fs-2xs);
+}
+.hint--warn {
+  color: var(--c-warning-text);
+}
+
+code {
+  padding: 0 var(--space-2);
+  border-radius: var(--radius-1);
+  background-color: var(--c-surface-3);
+  font-family: var(--ff-mono);
+  font-size: 0.9em;
+}

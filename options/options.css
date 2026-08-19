@@ -1,0 +1,32 @@
+body {
+  background-color: var(--c-surface-sunken);
+}
+
+.wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 40rem;
+  margin-inline: auto;
+  padding: var(--space-6) var(--space-5) var(--space-7);
+}
+.wrap form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+.status {
+  font-size: var(--fs-xs);
+}
+.status.ok {
+  color: var(--c-success-text);
+}
+.status.err {
+  color: var(--c-danger);
+}
