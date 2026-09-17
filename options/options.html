@@ -14,30 +14,23 @@
     <form id="config-form">
       <section class="card">
         <h2>Portal de origen</h2>
-        <p class="hint">
-          Sitio donde el operador trabaja y donde vive
-          <code>sessionStorage["userData"]</code>. Se lee su
-          <code>identificationNumber</code> para consultar el OTP.
-        </p>
+        <p class="hint">Portal donde se consulta el usuario para obtener el OTP.</p>
         <div class="field">
           <label for="portalOrigin">URL del portal</label>
           <input class="input" id="portalOrigin" name="portalOrigin" type="url"
                  placeholder="https://portal.ejemplo.com" autocomplete="off" required />
-          <p class="hint hint--small">Al guardar se te pedirá permiso para leer ese sitio.</p>
+          <p class="hint hint--small">Se solicitará permiso para acceder a este sitio.</p>
         </div>
       </section>
 
       <section class="card">
         <h2>Sitio OTP</h2>
-        <p class="hint">
-          Administrador de tokens donde se consultan los OTP. Introduce su URL base
-          (ej. el sitio de pruebas o el de producción) y las credenciales de acceso.
-        </p>
+        <p class="hint">Sitio donde se consultan los códigos OTP. Introduzca la URL y las credenciales de acceso.</p>
         <div class="field">
           <label for="baseUrl">Base URL del sitio OTP</label>
           <input class="input" id="baseUrl" name="baseUrl" type="url"
                  placeholder="https://host:puerto" autocomplete="off" required />
-          <p class="hint hint--small">Al guardar se te pedirá permiso para acceder a ese sitio.</p>
+          <p class="hint hint--small">Se solicitará permiso para acceder a este sitio.</p>
         </div>
 
         <div class="field">
@@ -47,48 +40,28 @@
         <div class="field">
           <label for="password">Contraseña</label>
           <input class="input" id="password" name="password" type="password" autocomplete="off" required />
-          <p class="hint hint--small hint--warn">
-            ⚠️ La contraseña se guarda en <code>chrome.storage.local</code> en texto
-            plano (local a esta extensión).
-          </p>
+          <p class="hint hint--small hint--warn">La contraseña se guarda sin cifrar en <code>chrome.storage.local</code>.</p>
         </div>
       </section>
 
       <section class="card">
         <h2>Aplicar el código a un campo</h2>
-        <p class="hint">
-          El popup muestra un botón que escribe el código directamente en la
-          pestaña del portal. Indica el selector CSS que identifica el campo; si lo
-          dejas vacío, ese botón no aparece.
-        </p>
+        <p class="hint">El popup puede escribir el OTP en el portal. Indique el selector CSS del campo; déjelo vacío para ocultar el botón.</p>
         <div class="field">
           <label for="otpInputSelector">Selector CSS del campo</label>
           <input class="input" id="otpInputSelector" name="otpInputSelector" type="text"
                  placeholder="#token, input.token-digit" autocomplete="off" spellcheck="false" />
-          <p class="hint hint--small">
-            Se busca con <code>document.querySelectorAll</code> en la pestaña del portal
-            y debe apuntar a <code>input</code> o <code>textarea</code> editables. Si
-            coincide un solo campo recibe el código completo; si el portal usa un grupo
-            de casillas de un dígito, haz que coincidan todas (por ejemplo
-            <code>input.token-digit</code>) y se reparte una cifra en cada una.
-          </p>
+          <p class="hint hint--small">Debe apuntar a un <code>input</code> o <code>textarea</code> editable. Si coincide con varios campos de un dígito, el código se reparte entre ellos.</p>
         </div>
       </section>
 
       <section class="card">
         <h2>Refresco automático</h2>
-        <p class="hint">
-          Mientras el popup está abierto se muestra una cuenta atrás con la vida
-          restante del código; al agotarse se releen sólo los OTP, sin volver a
-          consultar la tabla de dispositivos.
-        </p>
+        <p class="hint">Mientras el popup esté abierto, el código se actualiza automáticamente al caducar.</p>
         <div class="field">
           <label for="otpPeriod">Duración del código (segundos)</label>
           <input class="input" id="otpPeriod" name="otpPeriod" type="number" min="5" max="600" step="5" />
-          <p class="hint hint--small">
-            El proveedor confirma 60 segundos. Se deja configurable por si cambiara;
-            si la cuenta atrás no coincide con el cambio real del código, ajústalo aquí.
-          </p>
+          <p class="hint hint--small">Normalmente son 60 segundos. Ajuste este valor si no coincide con el cambio del código.</p>
         </div>
       </section>
 
