@@ -3,7 +3,7 @@ import { loadConfig, saveConfig } from '../lib/config.js';
 const form = document.getElementById('config-form');
 const statusEl = document.getElementById('status');
 const fields = {
-  portalOrigin: document.getElementById('portalOrigin'),
+  portalOrigins: document.getElementById('portalOrigins'),
   username: document.getElementById('username'),
   password: document.getElementById('password'),
   baseUrl: document.getElementById('baseUrl'),
@@ -22,11 +22,21 @@ function toOriginPattern(rawUrl) {
   return `${url.protocol}//${url.host}/*`;
 }
 
+function parseOriginPatterns(rawUrls) {
+  const urls = rawUrls
+    .split(/[\n,]+/)
+    .map((url) => url.trim())
+    .filter(Boolean);
+  if (urls.length === 0) throw new TypeError('No se indicó ningún portal');
+
+  return [...new Set(urls.map(toOriginPattern))];
+}
+
 async function restore() {
   const config = await loadConfig();
-  fields.portalOrigin.value = config.portalOrigin
-    ? config.portalOrigin.replace(/\/\*$/, '')
-    : '';
+  fields.portalOrigins.value = config.portalOrigins
+    .map((origin) => origin.replace(/\/\*$/, ''))
+    .join('\n');
   fields.username.value = config.username;
   fields.password.value = config.password;
   fields.baseUrl.value = config.baseUrl;
@@ -38,14 +48,14 @@ form.addEventListener('submit', async (event) => {
   event.preventDefault();
   setStatus('Guardando…', '');
 
-  let portalPattern;
+  let portalPatterns;
   let baseUrl;
   try {
-    portalPattern = toOriginPattern(fields.portalOrigin.value.trim());
+    portalPatterns = parseOriginPatterns(fields.portalOrigins.value);
     baseUrl = fields.baseUrl.value.trim();
     new URL(baseUrl); // valida: lanza excepción si está vacía o mal formada
   } catch {
-    setStatus('URL inválida. Usa el formato https://host', 'err');
+    setStatus('URL inválida. Usa una URL https://host por línea.', 'err');
     return;
   }
 
@@ -60,7 +70,7 @@ form.addEventListener('submit', async (event) => {
     }
   }
 
-  const origins = [portalPattern, toOriginPattern(baseUrl)];
+  const origins = [...new Set([...portalPatterns, toOriginPattern(baseUrl)])];
   let granted;
   try {
     granted = await chrome.permissions.request({ origins });
@@ -74,7 +84,7 @@ form.addEventListener('submit', async (event) => {
   }
 
   await saveConfig({
-    portalOrigin: portalPattern,
+    portalOrigins: portalPatterns,
     username: fields.username.value.trim(),
     password: fields.password.value,
     baseUrl,

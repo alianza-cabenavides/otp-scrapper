@@ -76,19 +76,34 @@ function applyOtpToPage(selector, otp) {
   return { ok: true };
 }
 
-/** Busca una pestaña que coincida con el origen del portal configurado. */
-async function findPortalTab(portalOrigin) {
+/** Busca una pestaña que coincida con alguno de los portales configurados. */
+async function findPortalTab(portalOrigins) {
+  const origins = (Array.isArray(portalOrigins) ? portalOrigins : [portalOrigins])
+    .filter(Boolean);
+  if (origins.length === 0) return null;
+
   try {
-    const tabs = await chrome.tabs.query({ url: portalOrigin });
-    return tabs.find((t) => t.id != null) || null;
+    const activeTabs = await chrome.tabs.query({
+      url: origins,
+      active: true,
+      lastFocusedWindow: true,
+    });
+    const activeTab = activeTabs.find((tab) => tab.id != null);
+    if (activeTab) return activeTab;
+
+    const tabs = await chrome.tabs.query({ url: origins });
+    return tabs
+      .filter((tab) => tab.id != null)
+      .sort((left, right) => (right.lastAccessed || 0) - (left.lastAccessed || 0))[0]
+      || null;
   } catch {
     return null;
   }
 }
 
 /** Lee la identificación del usuario y su userData desde el portal. */
-async function readIdentification(portalOrigin) {
-  const tab = await findPortalTab(portalOrigin);
+async function readIdentification(portalOrigins) {
+  const tab = await findPortalTab(portalOrigins);
   if (!tab) {
     throw new OtpError(
       'NO_PORTAL_TAB',
@@ -186,7 +201,7 @@ async function runRefresh() {
   }
 
   try {
-    const { identification, userData } = await readIdentification(config.portalOrigin);
+    const { identification, userData } = await readIdentification(config.portalOrigins);
 
     // Sin tipo de usuario no se toca el sitio OTP.
     const userType = resolveUserType(userData);
@@ -275,7 +290,7 @@ async function runApplyOtp(otp) {
     };
   }
 
-  const tab = await findPortalTab(config.portalOrigin);
+  const tab = await findPortalTab(config.portalOrigins);
   if (!tab) {
     return {
       ok: false,

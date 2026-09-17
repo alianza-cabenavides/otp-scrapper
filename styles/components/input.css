@@ -24,3 +24,8 @@
 .input:focus {
   border-color: var(--c-accent);
 }
+
+textarea.input {
+  min-height: 5.5rem;
+  resize: vertical;
+}

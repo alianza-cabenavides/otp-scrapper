@@ -15,7 +15,8 @@ y los OTP se leen del sitio de administración de tokens iniciando sesión con t
 
 Abre las **Opciones** de la extensión (icono ⚙️ en el popup) y rellena:
 
-- **URL del portal** — el sitio donde vive `sessionStorage["userData"]`.
+- **URLs de los portales** — los sitios donde vive `sessionStorage["userData"]`, con una URL
+  por línea.
 - **Base URL del sitio OTP** — la URL del administrador de tokens.
 - **Usuario** y **Contraseña** del sitio OTP.
 - **Selector CSS del campo** (opcional) — el campo del portal donde escribir el código. Se
@@ -24,19 +25,22 @@ Abre las **Opciones** de la extensión (icono ⚙️ en el popup) y rellena:
   haz que el selector las abarque todas (p. ej. `input.token-digit`) y se reparte una cifra
   en cada una. Vacío, el botón de escribir no aparece.
 
-Pulsa **Guardar** y acepta el permiso que solicita Chrome para acceder a ambos sitios.
+Pulsa **Guardar** y acepta el permiso que solicita Chrome para acceder a los portales y al sitio OTP.
 
 > La contraseña se guarda en `chrome.storage.local` en texto plano, local a la extensión.
 
 ## Uso
 
-1. Abre la pestaña del portal con el usuario ya autenticado.
+1. Abre una pestaña de cualquiera de los portales configurados con el usuario ya autenticado.
 2. Abre el popup de la extensión y pulsa **Refrescar**.
 3. Se muestra una tarjeta por cada dispositivo con su OTP, la identificación y —en un
    usuario legal— la cuenta en sesión.
 
 Junto al código hay un botón que lo escribe en el campo del portal, y solo aparece si
 configuraste el selector.
+
+Si hay varios portales abiertos, se usa primero el portal activo en la última ventana enfocada;
+en su defecto, la pestaña de portal utilizada más recientemente.
 
 Un contador circular indica la vida restante del código. Al llegar a cero, la extensión
 vuelve a leer los OTP automáticamente mientras el popup siga abierto.

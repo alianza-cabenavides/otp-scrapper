@@ -14,12 +14,13 @@
     <form id="config-form">
       <section class="card">
         <h2>Portal de origen</h2>
-        <p class="hint">Portal donde se consulta el usuario para obtener el OTP.</p>
+        <p class="hint">Portales donde se consulta el usuario para obtener el OTP.</p>
         <div class="field">
-          <label for="portalOrigin">URL del portal</label>
-          <input class="input" id="portalOrigin" name="portalOrigin" type="url"
-                 placeholder="https://portal.ejemplo.com" autocomplete="off" required />
-          <p class="hint hint--small">Se solicitará permiso para acceder a este sitio.</p>
+          <label for="portalOrigins">URLs de los portales</label>
+          <textarea class="input" id="portalOrigins" name="portalOrigins" rows="3"
+                    placeholder="https://portal-a.ejemplo.com&#10;https://portal-b.ejemplo.com"
+                    autocomplete="off" spellcheck="false" required></textarea>
+          <p class="hint hint--small">Escriba una URL por línea. Se solicitará permiso para acceder a estos sitios.</p>
         </div>
       </section>
 
