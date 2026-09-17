@@ -32,9 +32,13 @@ Pulsa **Guardar** y acepta el permiso que solicita Chrome para acceder a los por
 ## Uso
 
 1. Abre una pestaña de cualquiera de los portales configurados con el usuario ya autenticado.
-2. Abre el popup de la extensión y pulsa **Refrescar**.
+2. Abre el popup de la extensión; la consulta se inicia automáticamente.
 3. Se muestra una tarjeta por cada dispositivo con su OTP, la identificación y —en un
    usuario legal— la cuenta en sesión.
+
+En aperturas posteriores se valida el usuario activo y se reutiliza el resultado de la sesión
+mientras el OTP siga vigente. Si venció, solo se vuelven a consultar los OTP de los dispositivos
+ya conocidos. El botón **Refrescar** fuerza una consulta completa.
 
 Junto al código hay un botón que lo escribe en el campo del portal, y solo aparece si
 configuraste el selector.

@@ -285,18 +285,28 @@ async function refresh() {
   }
 }
 
+async function initialLoad() {
+  refreshBtn.disabled = true;
+  showSpinner();
+  try {
+    const response = await chrome.runtime.sendMessage({ type: 'INITIAL_LOAD' });
+    render(response);
+  } catch (err) {
+    showError(`No se pudo contactar el proceso en segundo plano: ${err.message}`);
+  } finally {
+    refreshBtn.disabled = false;
+  }
+}
+
 refreshBtn.addEventListener('click', refresh);
 optionsBtn.addEventListener('click', () => chrome.runtime.openOptionsPage());
 
-// Al abrir, muestra el último resultado guardado para no arrancar en vacío.
+// Al abrir, valida la sesión actual antes de reutilizar el último resultado.
 (async () => {
   // El botón de aplicar depende de la configuración, así que se lee primero.
   try {
     canApplyOtp = Boolean((await loadConfig()).otpInputSelector);
   } catch { /* sin configuración accesible */ }
 
-  try {
-    const { lastResult } = await chrome.storage.session.get('lastResult');
-    if (lastResult) render(lastResult);
-  } catch { /* sin resultado previo */ }
+  await initialLoad();
 })();

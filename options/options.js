@@ -91,6 +91,7 @@ form.addEventListener('submit', async (event) => {
     otpPeriod: Number(fields.otpPeriod.value) || undefined,
     otpInputSelector,
   });
+  await chrome.storage.session.remove('lastResult');
   setStatus('✓ Guardado', 'ok');
 });
 

@@ -2,7 +2,7 @@
 // del portal y consulta los OTP en el sitio de administración de tokens.
 
 import { loadConfig, isConfigComplete } from '../lib/config.js';
-import { resolveUserType, selectDevicesForUser } from '../lib/device-selection.js';
+import { USER_TYPE_LEGAL, resolveUserType, selectDevicesForUser } from '../lib/device-selection.js';
 import {
   getDevicesForIdentification,
   getOtpsForDevices,
@@ -189,6 +189,53 @@ async function discardCache(error) {
   return error;
 }
 
+/** Comprueba que una caché corresponde al usuario actualmente abierto. */
+function isSameUserContext(lastResult, identification, userData) {
+  if (!lastResult?.ok || String(lastResult.identification) !== String(identification)) {
+    return false;
+  }
+
+  const currentType = resolveUserType(userData);
+  const cachedType = resolveUserType(lastResult.userData);
+  if (!currentType.ok || !cachedType.ok || currentType.userType !== cachedType.userType) {
+    return false;
+  }
+
+  if (currentType.userType === USER_TYPE_LEGAL) {
+    const currentUser = typeof userData.userName === 'string' ? userData.userName.trim() : '';
+    const cachedUser = typeof lastResult.userData.userName === 'string'
+      ? lastResult.userData.userName.trim()
+      : '';
+    return Boolean(currentUser) && currentUser === cachedUser;
+  }
+
+  return true;
+}
+
+/** Consulta la tabla y los OTP para un contexto de usuario ya leído. */
+async function fetchFreshResult(config, identification, userData) {
+  const userType = resolveUserType(userData);
+  if (!userType.ok) return discardCache(userType);
+
+  // La tabla se filtra antes de pedir los OTP, para no gastar una petición
+  // por cada fila que vamos a descartar.
+  const found = await getDevicesForIdentification(config, identification);
+  const selection = selectDevicesForUser(found, userType.userType, userData.userName);
+  if (!selection.ok) return discardCache(selection);
+
+  const devices = await getOtpsForDevices(config, selection.devices);
+  const payload = {
+    ok: true,
+    identification,
+    userData,
+    devices,
+    fetchedAt: Date.now(),
+    ...(await computeExpiry(config)),
+  };
+  await chrome.storage.session.set({ lastResult: payload });
+  return payload;
+}
+
 /** Flujo completo: lee el portal, consulta la tabla y todos los OTP. */
 async function runRefresh() {
   const config = await loadConfig();
@@ -202,28 +249,7 @@ async function runRefresh() {
 
   try {
     const { identification, userData } = await readIdentification(config.portalOrigins);
-
-    // Sin tipo de usuario no se toca el sitio OTP.
-    const userType = resolveUserType(userData);
-    if (!userType.ok) return discardCache(userType);
-
-    // La tabla se filtra antes de pedir los OTP, para no gastar una petición
-    // por cada fila que vamos a descartar.
-    const found = await getDevicesForIdentification(config, identification);
-    const selection = selectDevicesForUser(found, userType.userType, userData.userName);
-    if (!selection.ok) return discardCache(selection);
-
-    const devices = await getOtpsForDevices(config, selection.devices);
-    const payload = {
-      ok: true,
-      identification,
-      userData,
-      devices,
-      fetchedAt: Date.now(),
-      ...(await computeExpiry(config)),
-    };
-    await chrome.storage.session.set({ lastResult: payload });
-    return payload;
+    return await fetchFreshResult(config, identification, userData);
   } catch (err) {
     return {
       ok: false,
@@ -237,18 +263,7 @@ async function runRefresh() {
  * Refresco ligero al caducar un código: relee solo los OTP de los dispositivos
  * ya conocidos, sin consultar de nuevo la tabla ni el portal.
  */
-async function runRefreshOtps() {
-  const config = await loadConfig();
-  if (!isConfigComplete(config)) {
-    return { ok: false, code: 'NOT_CONFIGURED', message: 'Falta configuración.' };
-  }
-
-  const { lastResult } = await chrome.storage.session.get('lastResult');
-  if (!lastResult || !lastResult.ok || !lastResult.devices?.length) {
-    // Sin consulta previa que refrescar: toca hacer la consulta completa.
-    return { ok: false, code: 'NO_CACHE', message: 'No hay una consulta previa que refrescar.' };
-  }
-
+async function refreshCachedOtps(config, lastResult) {
   try {
     const devices = await getOtpsForDevices(config, lastResult.devices);
 
@@ -268,6 +283,60 @@ async function runRefreshOtps() {
     };
     await chrome.storage.session.set({ lastResult: payload });
     return payload;
+  } catch (err) {
+    return {
+      ok: false,
+      code: err instanceof OtpError ? err.code : 'UNKNOWN',
+      message: err.message || String(err),
+    };
+  }
+}
+
+async function runRefreshOtps() {
+  const config = await loadConfig();
+  if (!isConfigComplete(config)) {
+    return { ok: false, code: 'NOT_CONFIGURED', message: 'Falta configuración.' };
+  }
+
+  const { lastResult } = await chrome.storage.session.get('lastResult');
+  if (!lastResult || !lastResult.ok || !lastResult.devices?.length) {
+    // Sin consulta previa que refrescar: toca hacer la consulta completa.
+    return { ok: false, code: 'NO_CACHE', message: 'No hay una consulta previa que refrescar.' };
+  }
+
+  return refreshCachedOtps(config, lastResult);
+}
+
+/** Valida el usuario activo y aprovecha la caché durante la sesión. */
+async function runInitialLoad() {
+  const config = await loadConfig();
+  if (!isConfigComplete(config)) {
+    return {
+      ok: false,
+      code: 'NOT_CONFIGURED',
+      message: 'Falta configuración. Abre Opciones y define el portal y las credenciales del sitio OTP.',
+    };
+  }
+
+  try {
+    const { identification, userData } = await readIdentification(config.portalOrigins);
+    const userType = resolveUserType(userData);
+    if (!userType.ok) return discardCache(userType);
+
+    const { lastResult } = await chrome.storage.session.get('lastResult');
+    if (!isSameUserContext(lastResult, identification, userData)) {
+      await chrome.storage.session.remove('lastResult');
+      return await fetchFreshResult(config, identification, userData);
+    }
+
+    if (!lastResult.devices?.length) {
+      return lastResult;
+    }
+
+    const hasOtp = lastResult.devices.some((device) => device.otp);
+    if (hasOtp && lastResult.expiresAt > Date.now()) return lastResult;
+
+    return await refreshCachedOtps(config, lastResult);
   } catch (err) {
     return {
       ok: false,
@@ -331,6 +400,10 @@ async function runApplyOtp(otp) {
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  if (message?.type === 'INITIAL_LOAD') {
+    runInitialLoad().then(sendResponse);
+    return true;
+  }
   if (message?.type === 'REFRESH') {
     runRefresh().then(sendResponse);
     return true; // mantiene abierto el canal para la respuesta asíncrona
