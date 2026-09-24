@@ -16,14 +16,18 @@ y los OTP se leen del sitio de administración de tokens iniciando sesión con t
 Abre las **Opciones** de la extensión (icono ⚙️ en el popup) y rellena:
 
 - **URLs de los portales** — los sitios donde vive `sessionStorage["userData"]`, con una URL
-  por línea.
-- **Base URL del sitio OTP** — la URL del administrador de tokens.
+  por línea. Inicialmente incluye los portales de QA y preproducción.
+- **Base URL del sitio OTP** — la URL del administrador de tokens. Inicialmente apunta al
+  sitio de pruebas.
 - **Usuario** y **Contraseña** del sitio OTP.
 - **Selector CSS del campo** (opcional) — el campo del portal donde escribir el código. Se
   busca con `document.querySelectorAll` y debe apuntar a `input` o `textarea` editables. Un
   único campo recibe el código completo; si el portal usa un grupo de casillas de un dígito,
   haz que el selector las abarque todas (p. ej. `input.token-digit`) y se reparte una cifra
-  en cada una. Vacío, el botón de escribir no aparece.
+  en cada una. Inicialmente usa `#token, input.token-digit`; si se deja vacío, el botón de
+  escribir no aparece.
+
+Los valores iniciales pueden modificarse y las opciones guardadas siempre prevalecen sobre ellos.
 
 Pulsa **Guardar** y acepta el permiso que solicita Chrome para acceder a los portales y al sitio OTP.
 
