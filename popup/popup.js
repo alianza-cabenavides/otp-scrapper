@@ -181,6 +181,8 @@ function stopCountdown() {
   if (timer.handle) clearInterval(timer.handle);
   timer.handle = null;
   countdownEl.hidden = true;
+  countdownEl.classList.remove('urgent', 'expired');
+  contentEl.classList.remove('urgent', 'expired');
 }
 
 /** Programa el siguiente reintento tras un fallo, con retroceso progresivo. */
@@ -239,8 +241,12 @@ function tick() {
   const ratio = Math.max(0, Math.min(1, remainingMs / (timer.period * 1000)));
   ringFg.style.strokeDashoffset = String(RING_CIRCUMFERENCE * (1 - ratio));
 
-  countdownEl.classList.toggle('urgent', remaining <= 10 && remaining > 0);
-  countdownEl.classList.toggle('expired', remaining <= 0);
+  const urgent = remaining <= 10 && remaining > 0;
+  const expired = remaining <= 0;
+  countdownEl.classList.toggle('urgent', urgent);
+  countdownEl.classList.toggle('expired', expired);
+  contentEl.classList.toggle('urgent', urgent);
+  contentEl.classList.toggle('expired', expired);
 
   // El anillo llega a cero en el borde real; la consulta espera el margen.
   if (remainingMs <= -REFRESH_GRACE_MS) autoRefresh();
