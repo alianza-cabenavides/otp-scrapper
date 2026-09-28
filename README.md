@@ -1,4 +1,4 @@
-# Alianza OTP Pruebas
+# OTP Pruebas
 
 Extensión de Chrome que muestra los OTP disponibles de un usuario.
 
@@ -69,7 +69,7 @@ El campo `userType` de `userData` decide qué se muestra:
 |------|-----|
 | `manifest.json` | Manifiesto MV3 |
 | `background/service-worker.js` | Lee el portal y consulta el sitio OTP |
-| `lib/alianza-client.js` | Login y consultas HTTP |
+| `lib/otp-client.js` | Login y consultas HTTP |
 | `lib/device-selection.js` | Filtro por `userType` / `userName` |
 | `lib/parsers.js` | Extrae los datos del HTML del sitio |
 | `lib/config.js` | Configuración en `chrome.storage.local` |

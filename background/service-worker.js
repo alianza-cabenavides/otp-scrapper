@@ -11,7 +11,7 @@ import {
   getClockObservation,
   restoreClockObservation,
   OtpError,
-} from '../lib/alianza-client.js';
+} from '../lib/otp-client.js';
 
 /** Se inyecta en la pestaña del portal para leer sessionStorage['userData']. */
 function readUserDataFromPage() {

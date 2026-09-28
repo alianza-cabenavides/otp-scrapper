@@ -2,6 +2,7 @@ import { loadConfig, saveConfig } from '../lib/config.js';
 
 const form = document.getElementById('config-form');
 const statusEl = document.getElementById('status');
+const advancedPanel = document.querySelector('.advanced');
 const fields = {
   portalOrigins: document.getElementById('portalOrigins'),
   username: document.getElementById('username'),
@@ -10,6 +11,10 @@ const fields = {
   otpPeriod: document.getElementById('otpPeriod'),
   otpInputSelector: document.getElementById('otpInputSelector'),
 };
+
+form.addEventListener('invalid', (event) => {
+  if (event.target.closest('.advanced')) advancedPanel.open = true;
+}, true);
 
 function setStatus(message, kind) {
   statusEl.textContent = message;
@@ -55,6 +60,7 @@ form.addEventListener('submit', async (event) => {
     baseUrl = fields.baseUrl.value.trim();
     new URL(baseUrl); // valida: lanza excepción si está vacía o mal formada
   } catch {
+    advancedPanel.open = true;
     setStatus('URL inválida. Usa una URL https://host por línea.', 'err');
     return;
   }
@@ -65,6 +71,7 @@ form.addEventListener('submit', async (event) => {
     try {
       document.createDocumentFragment().querySelector(otpInputSelector);
     } catch {
+      advancedPanel.open = true;
       setStatus('El selector CSS del campo no es válido.', 'err');
       return;
     }
